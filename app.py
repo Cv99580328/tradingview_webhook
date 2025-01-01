@@ -1,22 +1,23 @@
-from flask import Flask, request, jsonify  # 必要なモジュールをインポート
+from flask import Flask, request, jsonify
 
-# Flaskアプリケーションを作成
 app = Flask(__name__)
 
-# ルートエンドポイント（ホームページ）
-@app.route('/')
+# テスト用のルート
+@app.route("/", methods=["GET"])
 def home():
-    return "Hello, Flask!"
+    return "Webhook is running!", 200
 
-# Webhookエンドポイントを追加
-@app.route('/webhook', methods=['POST'])
+# Webhookエンドポイントの例
+@app.route("/alert-hook", methods=["POST"])
 def webhook():
-    # TradingViewからのJSONデータを取得
-    data = request.json  # リクエストからJSONデータを受け取る
-    print(f"Received webhook data: {data}")  # ターミナルにデータを表示
-    # レスポンスを返す
-    return jsonify({"message": "Webhook received!"}), 200
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data received"}), 400
 
-# アプリケーションを起動
-if __name__ == '__main__':
-    app.run(debug=True)
+    # ここで受信したデータを処理する（例: ログ出力）
+    print(f"Received data: {data}")
+    return jsonify({"status": "success", "message": "Data received"}), 200
+
+# Flaskアプリケーションの起動設定
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0", port=5000)
